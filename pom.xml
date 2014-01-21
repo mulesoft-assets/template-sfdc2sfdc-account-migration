@@ -13,7 +13,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<mule.version>3.4.1</mule.version>
+		<mule.version>3.5.0-cascade</mule.version>
+		<sfdc.version>5.4.3</sfdc.version>
+		
 		<eclipsePluginVersion>2.8</eclipsePluginVersion>
 		<jdkName>JavaSE-1.6</jdkName>
 		<jdk.version>1.6</jdk.version>
@@ -101,6 +103,20 @@
 				<extensions>true</extensions>
 				<configuration>
 					<copyToAppsDirectory>true</copyToAppsDirectory>
+					<inclusions>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-sfdc</artifactId>
+						</inclusion>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-json</artifactId>
+						</inclusion>
+						<inclusion>
+							<groupId>org.mule.transports</groupId>
+							<artifactId>mule-transport-email</artifactId>
+						</inclusion>
+					</inclusions>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -231,13 +247,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
-	<scm>
-		<connection>scm:git:https://github.com/mulesoft/SFDC2SFDC - Accounts Migration.git</connection>
-		<developerConnection>scm:git:https://github.com/mulesoft/SFDC2SFDC - Accounts Migration.git</developerConnection>
-		<url>http://github.com/mulesoft/SFDC2SFDC - Accounts Migration</url>
-	</scm>
 
 	<!-- plugins for creating site reports -->
 	<reporting>
@@ -423,8 +432,25 @@
 			<version>${mule.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-json</artifactId>
+			<version>${mule.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.transports</groupId>
+			<artifactId>mule-transport-email</artifactId>
+			<version>${mule.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Connectors -->
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-sfdc</artifactId>
+			<version>${sfdc.version}</version>
+		</dependency>
 
 
 		<!-- for testing -->

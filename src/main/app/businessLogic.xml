@@ -21,35 +21,52 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
  <batch:job name="migrateAccountsBatch">
         <batch:threading-profile poolExhaustedAction="WAIT"/>
         <batch:input>
-            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT AccountNumber, AccountSource, AnnualRevenue, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, DunsNumber, Fax, Industry, IsCustomerPortal, IsDeleted, IsPartner, Jigsaw, LastActivityDate, LastReferencedDate, LastViewedDate, MasterRecordId, NaicsCode, NaicsDesc, Name, NumberOfEmployees, OwnerId, Ownership, ParentId, Phone, Rating, RecordTypeId, ShippingCity, ShippingCountry, ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Tradestyle, Type, Website, YearStarted FROM Account WHERE (MailingCountry = 'US' ) ORDER BY Name ASC" doc:name="query Accounts from Salesforce instance A" fetchSize="${page.size}"/>
+            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT AccountNumber, AccountSource, AnnualRevenue, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, DunsNumber, Fax, Industry, IsCustomerPortal, IsDeleted, IsPartner, Jigsaw, LastActivityDate, LastReferencedDate, LastViewedDate, MasterRecordId, NaicsCode, NaicsDesc, Name, NumberOfEmployees, OwnerId, Ownership, ParentId, Phone, Rating, RecordTypeId, ShippingCity, ShippingCountry, ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Tradestyle, Type, Website, YearStarted FROM Account ORDER BY Name ASC" doc:name="query Accounts from Salesforce instance A" fetchSize="${page.size}"/>
         </batch:input> 
         <batch:process-records>
             <batch:step name="getAccountInBStep">
                 <enricher source="#[payload]" target="#[recordVars['accountInB']]" doc:name="store result in record var 'accountInB'">
-                    <sfdc:query-single config-ref="SalesforceB" query="SELECT Id, LastModifiedDate FROM Account WHERE Name = '#[payload['Name']]'" doc:name="query Account in Salesforce instance B"/>
+                    <sfdc:query-single config-ref="SalesforceB" query="SELECT Name, LastReferencedDate FROM Account WHERE Name = '#[payload['Name']]'" doc:name="query Account in Salesforce instance B"/>
                 </enricher>
             </batch:step>
             <batch:step name="selectNewerAccountStep" filter-expression="#[recordVars['accountInB'] is NullPayload]">
                 <choice doc:name="Choice">
                     <when expression="#[org.mule.kicks.util.AccountDateComparator.isAfter(payload, recordVars['accountInB'])]">
-                        <expression-component doc:name="define Id in SalesForce Intance B"><![CDATA[payload['Id'] = recordVars['accountInB']['Id']
+                        <expression-component doc:name="define Id in SalesForce Intance B"><![CDATA[payload['Name'] = recordVars['accountInB']['Name']
 
 ]]></expression-component>
+					<logger level="INFO" message="One With #[payload]"/>
                     </when>
                     <otherwise>
                         <set-payload doc:name="set to null to skip this account" value="#[return null]"/>
+					<logger level="INFO" message="One Skipped"/>
                     </otherwise>
                 </choice>
             </batch:step>
             <batch:step name="createAccountsInBStep" filter-expression="#[payload is NullPayload]">
-                <expression-component doc:name="remove Fields type and LastActivityDate"><![CDATA[payload.remove('type'); 
-payload.remove('LastActivityDate');]]></expression-component>
+                <expression-component doc:name="remove Fields type and LastReferencedDate"><![CDATA[payload.remove('type'); 
+                payload.remove('LastViewedDate');
+                payload.remove('Id');
+                payload.remove('IsCustomerPortal');
+                payload.remove('IsDeleted');
+                payload.remove('IsPartner');
+                payload.remove('MasterRecordId');
+                payload.remove('DunsNumber');
+                payload.remove('YearStarted');
+                payload.remove('Tradestyle');
+                payload.remove('NaicsDesc');
+                payload.remove('NaicsCode');
+                payload.remove('Jigsaw');
+                payload.remove('AccountNumber');
+                payload.remove('LastActivityDate');
+payload.remove('LastReferencedDate');]]></expression-component>
                 <batch:commit size="200" doc:name="Batch Commit">
-					<sfdc:upsert config-ref="SalesforceB"  type="Account" doc:name="upsert accounts in org B" externalIdFieldName="Id">
+					<sfdc:upsert config-ref="SalesforceB"  type="Account" doc:name="upsert accounts in org B" externalIdFieldName="Name">
                         <sfdc:objects ref="#[payload]"/>
 					</sfdc:upsert>
-                    <logger level="INFO" doc:name="Logger"/>
+                    <logger level="INFO" message="HEYHEY #[payload]" doc:name="Logger"/>
                 </batch:commit>
+                <logger level="INFO" message="HOHO #[payload]" doc:name="Logger"/>
             </batch:step>
         </batch:process-records>
         <batch:on-complete>
