@@ -18,7 +18,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd">
 
- <batch:job name="migrateContactsBatch">
+ <batch:job name="migrateAccountsBatch">
         <batch:threading-profile poolExhaustedAction="WAIT"/>
         <batch:input>
             <sfdc:query config-ref="SalesforceA" query="dsql:SELECT AccountNumber, AccountSource, AnnualRevenue, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, DunsNumber, Fax, Industry, IsCustomerPortal, IsDeleted, IsPartner, Jigsaw, LastActivityDate, LastReferencedDate, LastViewedDate, MasterRecordId, NaicsCode, NaicsDesc, Name, NumberOfEmployees, OwnerId, Ownership, ParentId, Phone, Rating, RecordTypeId, ShippingCity, ShippingCountry, ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Tradestyle, Type, Website, YearStarted FROM Account WHERE (MailingCountry = 'US' ) ORDER BY Name ASC" doc:name="query Accounts from Salesforce instance A" fetchSize="${page.size}"/>
@@ -29,9 +29,9 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
                     <sfdc:query-single config-ref="SalesforceB" query="SELECT Id, LastModifiedDate FROM Account WHERE Name = '#[payload['Name']]'" doc:name="query Account in Salesforce instance B"/>
                 </enricher>
             </batch:step>
-            <batch:step name="selectNewerAccountStep" filter-expression="#[recordVars['contactInB'] is NullPayload]">
+            <batch:step name="selectNewerAccountStep" filter-expression="#[recordVars['accountInB'] is NullPayload]">
                 <choice doc:name="Choice">
-                    <when expression="#[org.mule.kicks.util.ContactDateComparator.isAfter(payload, recordVars['contactInB'])]">
+                    <when expression="#[org.mule.kicks.util.AccountDateComparator.isAfter(payload, recordVars['accountInB'])]">
                         <expression-component doc:name="define Id in SalesForce Intance B"><![CDATA[payload['Id'] = recordVars['accountInB']['Id']
 
 ]]></expression-component>
@@ -42,8 +42,8 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
                 </choice>
             </batch:step>
             <batch:step name="createAccountsInBStep" filter-expression="#[payload is NullPayload]">
-                <expression-component doc:name="remove Fields type and LastModifiedDate"><![CDATA[payload.remove('type'); 
-payload.remove('LastModifiedDate');]]></expression-component>
+                <expression-component doc:name="remove Fields type and LastActivityDate"><![CDATA[payload.remove('type'); 
+payload.remove('LastActivityDate');]]></expression-component>
                 <batch:commit size="200" doc:name="Batch Commit">
 					<sfdc:upsert config-ref="SalesforceB"  type="Account" doc:name="upsert accounts in org B" externalIdFieldName="Id">
                         <sfdc:objects ref="#[payload]"/>
@@ -71,7 +71,7 @@ payload.remove('LastModifiedDate');]]></expression-component>
 This flow should control the direction of the application, and it should be called by the different endpoints that your Kick exposes to trigger it.
 
 ">
-        <batch:execute name="migrateContactsBatch" doc:name="trigger migrateContactsBatch"/>
+        <batch:execute name="migrateAccountsBatch" doc:name="trigger migrateAccountsBatch"/>
         <exception-strategy ref="defaultChoiceExceptionStrategy" doc:name="catch Exception and call defaultChoiceExceptionStrategy"/>
     </flow>
     
