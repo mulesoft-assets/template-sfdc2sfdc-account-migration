@@ -23,7 +23,7 @@ import org.mule.tck.junit4.FunctionalTestCase;
  * for this Mule Kick that make calls to external systems.
  * 
  */
-public class accountsMigrationTest extends AbstractKickTestCase {
+public class AccountsMigrationIT extends AbstractKickTestCase {
 
 	@Before
 	public void setUp() {

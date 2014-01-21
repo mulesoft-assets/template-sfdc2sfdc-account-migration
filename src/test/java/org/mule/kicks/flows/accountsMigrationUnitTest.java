@@ -25,7 +25,7 @@ import org.mule.tck.junit4.FunctionalTestCase;
  * The objective of this class is to validate the correct behavior of the flows
  * for this Mule Kick.
  */
-public class accountsMigrationUnitTest extends FunctionalTestCase {
+public class AccountsMigrationUnitTest extends FunctionalTestCase {
 
     @BeforeClass
     public static void beforeClass() {
