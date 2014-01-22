@@ -1,4 +1,4 @@
-package org.mule.kicks.transformers;
+package org.mule.kicks.util;
 
 import java.util.HashMap;
 import java.util.List;
