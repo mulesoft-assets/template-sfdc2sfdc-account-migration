@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
 xmlns="http://www.mulesoft.org/schema/mule/core" 
 xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
 xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
@@ -16,52 +16,37 @@ http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/ba
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
-http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd">
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
  <batch:job name="migrateAccountsBatch">
         <batch:threading-profile poolExhaustedAction="WAIT"/>
         <batch:input>
-            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT AccountNumber, AccountSource, AnnualRevenue, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, DunsNumber, Fax, Industry, IsCustomerPortal, IsDeleted, IsPartner, Jigsaw, LastActivityDate, LastReferencedDate, LastViewedDate, MasterRecordId, NaicsCode, NaicsDesc, Name, NumberOfEmployees, OwnerId, Ownership, ParentId, Phone, Rating, RecordTypeId, ShippingCity, ShippingCountry, ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Tradestyle, Type, Website, YearStarted FROM Account ORDER BY Name ASC" doc:name="query Accounts from Salesforce instance A" fetchSize="${page.size}"/>
+            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT AccountNumber, AccountSource, AnnualRevenue, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, Fax, Industry, IsPartner, LastReferencedDate, Name, NumberOfEmployees, OwnerId, Ownership, ParentId, Phone, Rating, RecordTypeId, ShippingCity, ShippingCountry, ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website FROM Account ORDER BY Name ASC" doc:name="query Accounts from Salesforce instance A" fetchSize="${page.size}"/>
         </batch:input> 
         <batch:process-records>
             <batch:step name="getAccountInBStep">
                 <enricher source="#[payload]" target="#[recordVars['accountInB']]" doc:name="store result in record var 'accountInB'">
-                    <sfdc:query-single config-ref="SalesforceB" query="SELECT Name, LastReferencedDate FROM Account WHERE Name = '#[payload['Name']]'" doc:name="query Account in Salesforce instance B"/>
+                    <sfdc:query-single config-ref="SalesforceB" query="SELECT Id, Name, LastReferencedDate FROM Account WHERE Name = '#[payload['Name']]'" doc:name="query Account in Salesforce instance B"/>
                 </enricher>
             </batch:step>
             <batch:step name="selectNewerAccountStep" filter-expression="#[recordVars['accountInB'] is NullPayload]">
                 <choice doc:name="Choice">
                     <when expression="#[org.mule.kicks.util.AccountDateComparator.isAfter(payload, recordVars['accountInB'])]">
-                        <expression-component doc:name="define Id in SalesForce Intance B"><![CDATA[payload['Name'] = recordVars['accountInB']['Name']
-
-]]></expression-component>
-					<logger level="INFO" message="One With #[payload]"/>
+                        <expression-component doc:name="define Id in SalesForce Intance B"><![CDATA[payload['Id'] = recordVars['accountInB']['Id']]]></expression-component>
                     </when>
                     <otherwise>
                         <set-payload doc:name="set to null to skip this account" value="#[return null]"/>
-					<logger level="INFO" message="One Skipped"/>
                     </otherwise>
                 </choice>
             </batch:step>
             <batch:step name="createAccountsInBStep" filter-expression="#[payload is NullPayload]">
                 <expression-component doc:name="remove Fields type and LastReferencedDate"><![CDATA[payload.remove('type'); 
-                payload.remove('LastViewedDate');
-                payload.remove('Id');
-                payload.remove('IsCustomerPortal');
-                payload.remove('IsDeleted');
-                payload.remove('IsPartner');
-                payload.remove('MasterRecordId');
-                payload.remove('DunsNumber');
-                payload.remove('YearStarted');
-                payload.remove('Tradestyle');
-                payload.remove('NaicsDesc');
-                payload.remove('NaicsCode');
-                payload.remove('Jigsaw');
-                payload.remove('AccountNumber');
-                payload.remove('LastActivityDate');
-payload.remove('LastReferencedDate');]]></expression-component>
+                payload.remove('LastReferencedDate');
+                int intNumberOfEmployees = Integer.parseInt(payload.get('NumberOfEmployees'));
+                payload.put('NumberOfEmployees', intNumberOfEmployees);]]></expression-component>
                 <batch:commit size="200" doc:name="Batch Commit">
-					<sfdc:upsert config-ref="SalesforceB"  type="Account" doc:name="upsert accounts in org B" externalIdFieldName="Name">
+					<sfdc:upsert config-ref="SalesforceB"  type="Account" doc:name="upsert accounts in org B" externalIdFieldName="Id">
                         <sfdc:objects ref="#[payload]"/>
 					</sfdc:upsert>
                     <logger level="INFO" message="HEYHEY #[payload]" doc:name="Logger"/>
