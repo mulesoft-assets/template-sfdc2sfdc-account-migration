@@ -21,7 +21,7 @@ public class AccountDateComparator {
 	private static final String LAST_REFERENCED_DATE = "LastReferencedDate";
 
 	/**
-	 * Validate which contact has the latest last modification date.
+	 * Validate which account has the latest last referenced date.
 	 * 
 	 * @param accountA
 	 *            SFDC account map
@@ -35,12 +35,20 @@ public class AccountDateComparator {
 		Validate.notNull(accountB, "The account B should not be null");
 
 		Validate.isTrue(accountA.containsKey(LAST_REFERENCED_DATE), "The account A map should containt the key " + LAST_REFERENCED_DATE);
-		Validate.isTrue(accountB.containsKey(LAST_REFERENCED_DATE), "The account B map should containt the key " + LAST_REFERENCED_DATE);
 
-		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		DateTime lastModifiedDateOfA = formatter.parseDateTime(accountA.get(LAST_REFERENCED_DATE));
-		DateTime lastModifiedDateOfB = formatter.parseDateTime(accountB.get(LAST_REFERENCED_DATE));
-
-		return lastModifiedDateOfA.isAfter(lastModifiedDateOfB);
+		if (accountB.get(LAST_REFERENCED_DATE) == null ) {
+			
+			return true;
+			
+		} else { 
+			
+			DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+			DateTime lastReferencedDateOfA = formatter.parseDateTime(accountA.get(LAST_REFERENCED_DATE));
+			DateTime lastReferencedDateOfB = formatter.parseDateTime(accountB.get(LAST_REFERENCED_DATE));
+			
+			return lastReferencedDateOfA.isAfter(lastReferencedDateOfB);
+			
+		}
+		
 	}
 }
