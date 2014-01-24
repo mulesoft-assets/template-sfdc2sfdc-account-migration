@@ -53,7 +53,7 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 	protected BatchJobInstanceStore jobInstanceStore;
 
 	private static SubflowInterceptingChainLifecycleWrapper checkAccountflow;
-	private static List<Map<String, String>> createdAccounts = new ArrayList<Map<String, String>>();
+	private static List<Map<String, Object>> createdAccounts = new ArrayList<Map<String, Object>>();
 
 	protected class BatchWaitListener implements BatchNotificationListener {
 
@@ -101,14 +101,16 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		batchJobInstance = this.getUpdatedInstance(batchJobInstance);
 
 		Assert.assertEquals("The account should not have been sync", null, invokeRetrieveAccountFlow(checkAccountflow, createdAccounts.get(0)));
+		
+		Assert.assertEquals("The account should not have been sync", null, invokeRetrieveAccountFlow(checkAccountflow, createdAccounts.get(1)));
 
-		Map<String, String> payload = invokeRetrieveAccountFlow(checkAccountflow, createdAccounts.get(1));
-		Assert.assertEquals("The account should have been sync", createdAccounts.get(1).get("Email"), payload.get("Email"));
+		Map<String, Object> payload = invokeRetrieveAccountFlow(checkAccountflow, createdAccounts.get(2));
+		Assert.assertEquals("The account should have been sync", createdAccounts.get(2).get("Name"), payload.get("Name"));
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, String> invokeRetrieveAccountFlow(SubflowInterceptingChainLifecycleWrapper flow, Map<String, String> account) throws Exception {
-		Map<String, String> accountMap = new HashMap<String, String>();
+	private Map<String, Object> invokeRetrieveAccountFlow(SubflowInterceptingChainLifecycleWrapper flow, Map<String, Object> account) throws Exception {
+		Map<String, Object> accountMap = new HashMap<String, Object>();
 
 		accountMap.put("Name", account.get("Name"));
 
@@ -117,7 +119,7 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		if (payload instanceof NullPayload) {
 			return null;
 		} else {
-			return (Map<String, String>) payload;
+			return (Map<String, Object>) payload;
 		}
 	}
 
@@ -154,13 +156,22 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("createAccountFlow");
 		flow.initialise();
 
-		// This account should not be sync
-		Map<String, String> account = createAccount("A", 0);
-		account.put("MailingCountry", "ARG");
+		// This account should not be sync as the industry is not Government nor Education
+		Map<String, Object> account = createAccount("A", 0);
+		account.put("Industry", "Insurance");
+		account.put("NumberOfEmployees", 8000);
 		createdAccounts.add(account);
 
-		// This account should BE sync
+		// This account should not be sync as the number of employees is smaller than 7000
 		account = createAccount("A", 1);
+		account.put("Industry", "Education");
+		account.put("NumberOfEmployees", 5000);
+		createdAccounts.add(account);
+		
+		// This account should BE sync
+		account = createAccount("A", 2);
+		account.put("Industry", "Education");
+		account.put("NumberOfEmployees", 9000);
 		createdAccounts.add(account);
 
 		MuleEvent event = flow.process(getTestEvent(createdAccounts, MessageExchangePattern.REQUEST_RESPONSE));
@@ -175,8 +186,8 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("deleteAccountFromAFlow");
 		flow.initialise();
 
-		List<String> idList = new ArrayList<String>();
-		for (Map<String, String> c : createdAccounts) {
+		List<Object> idList = new ArrayList<Object>();
+		for (Map<String, Object> c : createdAccounts) {
 			idList.add(c.get("Id"));
 		}
 		flow.process(getTestEvent(idList, MessageExchangePattern.REQUEST_RESPONSE));
@@ -185,8 +196,8 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		flow = getSubFlow("deleteAccountFromBFlow");
 		flow.initialise();
 		idList.clear();
-		for (Map<String, String> c : createdAccounts) {
-			Map<String, String> account = invokeRetrieveAccountFlow(checkAccountflow, c);
+		for (Map<String, Object> c : createdAccounts) {
+			Map<String, Object> account = invokeRetrieveAccountFlow(checkAccountflow, c);
 			if (account != null) {
 				idList.add(account.get("Id"));
 			}
@@ -194,19 +205,13 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		flow.process(getTestEvent(idList, MessageExchangePattern.REQUEST_RESPONSE));
 	}
 
-	private Map<String, String> createAccount(String orgId, int sequence) {
-		Map<String, String> account = new HashMap<String, String>();
+	private Map<String, Object> createAccount(String orgId, int sequence) {
+		Map<String, Object> account = new HashMap<String, Object>();
 
 		account.put("Name", "Name_" + sequence);
-		account.put("Id", "Id" + sequence);
-		account.put("Email", "some.email." + sequence + "@fakemail.com");
-		account.put("Description", "Some fake description");
-		account.put("MailingCity", "Denver");
-		account.put("MailingCountry", "USA");
-		account.put("MobilePhone", "123456789");
-		account.put("Department", "department_" + sequence + "_" + orgId);
+		account.put("BillingCity", "San Francisco");
+		account.put("BillingCountry", "USA");
 		account.put("Phone", "123456789");
-		account.put("Title", "Dr");
 
 		return account;
 	}
