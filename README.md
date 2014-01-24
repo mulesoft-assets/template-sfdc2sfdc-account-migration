@@ -5,7 +5,7 @@
     * [Running on CloudHub](#runoncloudhub)
     	* [Deploying your Kick on CloudHub](#deployingyourkickoncloudhub)
     * [Running on premise](#runonopremise)
-        * [Properties to be configured](#propertiestobeconfigured)
+    * [Properties to be configured](#propertiestobeconfigured)
 + [Customize It!](#customizeit)
     * [config.xml](#configxml)
     * [endpoints.xml](#endpointsxml)
@@ -117,7 +117,7 @@ This Kick has only an [HTTP Inbound Endpoint](http://www.mulesoft.org/documentat
 
 ## businessLogic.xml<a name="businesslogicxml"/>
 Functional aspect of the kick is implemented on this XML, directed by one flow responsible of excecuting the logic.
-For the pourpose of this particular Kick the *mainFlow* just excecutes the Batch Job which handles all the logic of it.
+For the pourpose of this particular Kick the *mainFlow* just excecutes a [Batch Job](http://www.mulesoft.org/documentation/display/current/Batch+Processing). which handles all the logic of it.
 This flow has Exception Strategy that basically consists on invoking the *defaultChoiseExceptionStrategy* defined in *errorHandling.xml* file.
 
 
