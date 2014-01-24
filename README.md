@@ -80,9 +80,9 @@ In order to use this Mule Kick you need to configure properties (Credentials, co
 
 
 #### EMail Details
-+ mail.from=batch.migrateaccounts.migration%40mulesoft.com
-+ mail.to=cesar.garcia@mulesoft.com
-+ mail.subject=Batch Job Finished Report
++ mail.from `batch.migrateaccounts.migration%40mulesoft.com`
++ mail.to `cesar.garcia@mulesoft.com`
++ mail.subject `Batch Job Finished Report`
 
 # Customize It!<a name="customizeit"/>
 
