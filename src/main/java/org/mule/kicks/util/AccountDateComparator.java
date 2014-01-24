@@ -18,7 +18,7 @@ import org.joda.time.format.DateTimeFormatter;
  * @author cesargarcia
  */
 public class AccountDateComparator {
-	private static final String LAST_REFERENCED_DATE = "LastReferencedDate";
+	private static final String LAST_MODIFIED_DATE = "LastModifiedDate";
 
 	/**
 	 * Validate which account has the latest last referenced date.
@@ -34,19 +34,19 @@ public class AccountDateComparator {
 		Validate.notNull(accountA, "The account A should not be null");
 		Validate.notNull(accountB, "The account B should not be null");
 
-		Validate.isTrue(accountA.containsKey(LAST_REFERENCED_DATE), "The account A map should containt the key " + LAST_REFERENCED_DATE);
+		Validate.isTrue(accountA.containsKey(LAST_MODIFIED_DATE), "The account A map should containt the key " + LAST_MODIFIED_DATE);
 
-		if (accountB.get(LAST_REFERENCED_DATE) == null ) {
+		if (accountB.get(LAST_MODIFIED_DATE) == null ) {
 			
 			return true;
 			
 		} else { 
 			
 			DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-			DateTime lastReferencedDateOfA = formatter.parseDateTime(accountA.get(LAST_REFERENCED_DATE));
-			DateTime lastReferencedDateOfB = formatter.parseDateTime(accountB.get(LAST_REFERENCED_DATE));
+			DateTime LastModifiedDateOfA = formatter.parseDateTime(accountA.get(LAST_MODIFIED_DATE));
+			DateTime LastModifiedDateOfB = formatter.parseDateTime(accountB.get(LAST_MODIFIED_DATE));
 			
-			return lastReferencedDateOfA.isAfter(lastReferencedDateOfB);
+			return LastModifiedDateOfA.isAfter(LastModifiedDateOfB);
 			
 		}
 		

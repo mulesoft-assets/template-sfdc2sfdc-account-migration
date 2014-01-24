@@ -50,7 +50,7 @@ public class AccountDateComparatorUnitTest {
 	
 		Map<String, String> accountInA = new HashMap<String, String>();
 		accountInA.put("Id", "1");
-		accountInA.put("LastReferencedDate", "2014-01-22T14:00:00.000Z");
+		accountInA.put("LastModifiedDate", "2014-01-22T14:00:00.000Z");
 		accountInA.put("Name", "FakeAccountInA");
 
 		return accountInA;
@@ -61,7 +61,7 @@ public class AccountDateComparatorUnitTest {
 		
 		Map<String, String> accountInA = new HashMap<String, String>();
 		accountInA.put("Id", "2");
-		accountInA.put("LastReferencedDate", "2014-01-22T11:00:00.000Z");
+		accountInA.put("LastModifiedDate", "2014-01-22T11:00:00.000Z");
 		accountInA.put("Name", "FakeAccountInB");
 
 		return accountInA;
@@ -72,7 +72,7 @@ public class AccountDateComparatorUnitTest {
 		
 		Map<String, String> accountInA = new HashMap<String, String>();
 		accountInA.put("Id", "2");
-		accountInA.put("LastReferencedDate", null);
+		accountInA.put("LastModifiedDate", null);
 		accountInA.put("Name", "FakeAccountInB");
 
 		return accountInA;
@@ -83,7 +83,7 @@ public class AccountDateComparatorUnitTest {
 		
 		Map<String, String> accountInA = new HashMap<String, String>();
 		accountInA.put("Id", "2");
-		accountInA.put("LastReferencedDate", "2014-01-22T21:00:00.000Z");
+		accountInA.put("LastModifiedDate", "2014-01-22T21:00:00.000Z");
 		accountInA.put("Name", "FakeAccountInB");
 
 		return accountInA;
