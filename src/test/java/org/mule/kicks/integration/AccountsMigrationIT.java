@@ -158,19 +158,19 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		flow.initialise();
 
 		// This account should not be sync as the industry is not Government nor Education
-		Map<String, Object> account = createAccount("ANotSyncOne");
+		Map<String, Object> account = createAccount("NotSyncOne");
 		account.put("Industry", "Insurance");
 		account.put("NumberOfEmployees", 8000);
 		createdAccounts.add(account);
 
 		// This account should not be sync as the number of employees is smaller than 7000
-		account = createAccount("ANotSyncTwo");
+		account = createAccount("NotSyncTwo");
 		account.put("Industry", "Education");
 		account.put("NumberOfEmployees", 5000);
 		createdAccounts.add(account);
 		
 		// This account should BE sync
-		account = createAccount("AYesSync");
+		account = createAccount("YesSync");
 		account.put("Industry", "Education");
 		account.put("NumberOfEmployees", 9000);
 		createdAccounts.add(account);
@@ -208,13 +208,12 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		flow.process(getTestEvent(idList, MessageExchangePattern.REQUEST_RESPONSE));
 	}
 
-	private Map<String, Object> createAccount(String orgId) {
+	private Map<String, Object> createAccount(String accountCase) {
 		Map<String, Object> account = new HashMap<String, Object>();
 
-		String kickName = KICK_NAME;
 		String timeStamp = new Long(new Date().getTime()).toString();
 		
-		account.put("Name", "Name_" + orgId + timeStamp);
+		account.put("Name", KICK_NAME + accountCase + timeStamp);
 		account.put("BillingCity", "San Francisco");
 		account.put("BillingCountry", "USA");
 		account.put("Phone", "123456789");
