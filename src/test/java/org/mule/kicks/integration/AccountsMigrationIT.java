@@ -2,6 +2,7 @@ package org.mule.kicks.integration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,8 @@ import com.sforce.soap.partner.SaveResult;
 public class AccountsMigrationIT extends AbstractKickTestCase {
 
 	protected static final int TIMEOUT = 60;
+	
+	private static final String KICK_NAME = "accountmigration";
 
 	private Prober prober;
 	protected Boolean failed;
@@ -97,8 +100,6 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		this.awaitJobTermination();
 
 		Assert.assertTrue(this.wasJobSuccessful());
-
-		batchJobInstance = this.getUpdatedInstance(batchJobInstance);
 
 		Assert.assertEquals("The account should not have been sync", null, invokeRetrieveAccountFlow(checkAccountflow, createdAccounts.get(0)));
 		
@@ -157,19 +158,19 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		flow.initialise();
 
 		// This account should not be sync as the industry is not Government nor Education
-		Map<String, Object> account = createAccount("A", 0);
+		Map<String, Object> account = createAccount("ANotSyncOne");
 		account.put("Industry", "Insurance");
 		account.put("NumberOfEmployees", 8000);
 		createdAccounts.add(account);
 
 		// This account should not be sync as the number of employees is smaller than 7000
-		account = createAccount("A", 1);
+		account = createAccount("ANotSyncTwo");
 		account.put("Industry", "Education");
 		account.put("NumberOfEmployees", 5000);
 		createdAccounts.add(account);
 		
 		// This account should BE sync
-		account = createAccount("A", 2);
+		account = createAccount("AYesSync");
 		account.put("Industry", "Education");
 		account.put("NumberOfEmployees", 9000);
 		createdAccounts.add(account);
@@ -179,6 +180,8 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		for (int i = 0; i < results.size(); i++) {
 			createdAccounts.get(i).put("Id", results.get(i).getId());
 		}
+		
+		System.out.println("Results of data creation in sandbox" + createdAccounts.toString());
 	}
 
 	private void deleteTestDataFromSandBox() throws MuleException, Exception {
@@ -205,10 +208,13 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		flow.process(getTestEvent(idList, MessageExchangePattern.REQUEST_RESPONSE));
 	}
 
-	private Map<String, Object> createAccount(String orgId, int sequence) {
+	private Map<String, Object> createAccount(String orgId) {
 		Map<String, Object> account = new HashMap<String, Object>();
 
-		account.put("Name", "Name_" + sequence);
+		String kickName = KICK_NAME;
+		String timeStamp = new Long(new Date().getTime()).toString();
+		
+		account.put("Name", "Name_" + orgId + timeStamp);
 		account.put("BillingCity", "San Francisco");
 		account.put("BillingCountry", "USA");
 		account.put("Phone", "123456789");
