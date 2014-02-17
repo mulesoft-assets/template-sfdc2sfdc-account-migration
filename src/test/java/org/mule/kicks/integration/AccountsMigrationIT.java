@@ -14,6 +14,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
@@ -23,6 +24,7 @@ import org.mule.api.context.notification.ServerNotification;
 import org.mule.construct.Flow;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;
@@ -73,6 +75,9 @@ public class AccountsMigrationIT extends AbstractKickTestCase {
 		}
 	}
 
+	@Rule
+	public DynamicPort port = new DynamicPort ("http.port");
+	
 	@Before
 	public void setUp() throws Exception {
 		failed = null;
