@@ -2,6 +2,7 @@ package org.mule.kicks.integration;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Date;
 import java.util.Properties;
 
 import org.junit.AfterClass;
@@ -28,7 +29,8 @@ public class AbstractKickTestCase extends FunctionalTestCase {
 
 	@AfterClass
 	public static void afterClass() {
-		System.getProperties().remove("mule.env");
+		System.getProperties()
+				.remove("mule.env");
 	}
 
 	@Override
@@ -47,21 +49,24 @@ public class AbstractKickTestCase extends FunctionalTestCase {
 	}
 
 	protected String getTestFlows() {
-            StringBuilder resources = new StringBuilder();
+		StringBuilder resources = new StringBuilder();
 
-            File testFlowsFolder = new File(TEST_FLOWS_FOLDER_PATH);
-            File[] listOfFiles = testFlowsFolder.listFiles();
-            if (listOfFiles != null) {
-                    for (File f : listOfFiles) {
-                            if (f.isFile() && f.getName().endsWith("xml")) {
-                                    resources.append(",").append(TEST_FLOWS_FOLDER_PATH).append(f.getName());
-                            }
-                    }
-                    return resources.toString();
-            } else {
-                    return "";
-            }
-        }
+		File testFlowsFolder = new File(TEST_FLOWS_FOLDER_PATH);
+		File[] listOfFiles = testFlowsFolder.listFiles();
+		if (listOfFiles != null) {
+			for (File f : listOfFiles) {
+				if (f.isFile() && f.getName()
+									.endsWith("xml")) {
+					resources.append(",")
+								.append(TEST_FLOWS_FOLDER_PATH)
+								.append(f.getName());
+				}
+			}
+			return resources.toString();
+		} else {
+			return "";
+		}
+	}
 
 	@Override
 	protected Properties getStartUpProperties() {
@@ -76,11 +81,23 @@ public class AbstractKickTestCase extends FunctionalTestCase {
 	}
 
 	protected Flow getFlow(String flowName) {
-		return (Flow) muleContext.getRegistry().lookupObject(flowName);
+		return (Flow) muleContext.getRegistry()
+									.lookupObject(flowName);
 	}
 
 	protected SubflowInterceptingChainLifecycleWrapper getSubFlow(String flowName) {
-		return (SubflowInterceptingChainLifecycleWrapper) muleContext.getRegistry().lookupObject(flowName);
+		return (SubflowInterceptingChainLifecycleWrapper) muleContext.getRegistry()
+																		.lookupObject(flowName);
 	}
 
+	protected String buildUniqueName(String kickName, String name) {
+		String timeStamp = new Long(new Date().getTime()).toString();
+
+		StringBuilder builder = new StringBuilder();
+		builder.append(name);
+		builder.append(kickName);
+		builder.append(timeStamp);
+
+		return builder.toString();
+	}
 }
