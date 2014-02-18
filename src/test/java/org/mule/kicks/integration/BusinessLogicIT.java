@@ -16,7 +16,7 @@ import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.construct.Flow;
-import org.mule.kicks.test.utils.BatchTestHelper;
+import org.mule.kicks.utils.BatchTestHelper;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.transport.NullPayload;
