@@ -1,9 +1,9 @@
-# Mule Kick: SFDC to SFDC Accounts Migration
+# Anypoint Template: SFDC to SFDC Account Migration
 
 + [Use Case](#usecase)
 + [Run it!](#runit)
     * [Running on CloudHub](#runoncloudhub)
-    	* [Deploying your Kick on CloudHub](#deployingyourkickoncloudhub)
+    	* [Deploying your Anypoint Template on CloudHub](#deployingyouranypointtemplateoncloudhub)
     * [Running on premise](#runonopremise)
     * [Properties to be configured](#propertiestobeconfigured)
 + [Customize It!](#customizeit)
@@ -11,7 +11,7 @@
     * [endpoints.xml](#endpointsxml)
     * [businessLogic.xml](#businesslogicxml)
     * [errorHandling.xml](#errorhandlingxml)
-+ [Testing the Kick](#testingthekick)
++ [Testing the Template](#testingthetemplate)
 
    
 
@@ -19,20 +19,20 @@
 # Use Case <a name="usecase"/>
 As a Salesforce admin I want to syncronize accountss between two Salesfoce orgs.
 
-This Kick (template) should serve as a foundation for the process of migrating accounts from one Salesfoce instance to another, being able to specify filtering criterias and desired behaviour when an account already exists in the destination org. 
+This Template should serve as a foundation for the process of migrating accounts from one Salesfoce instance to another, being able to specify filtering criterias and desired behaviour when an account already exists in the destination org. 
 
-As implemented, this Kick leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
+As implemented, this Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
 The batch job is divided in  Input, Process and On Complete stages.
-During the Input stage the Kick will go to the SalesForce Org A and query all the existing Accounts that match the filter criteria.
+During the Input stage the Template will go to the SalesForce Org A and query all the existing Accounts that match the filter criteria.
 During the Process stage, each SFDC Account will be filtered depending on, if it has an existing matching account in the SFDC Org B and if the last updated date of the later is greater than the one of SFDC Org A.
 The last step of the Process stage will group the accounts and create them in SFDC Org B.
-Finally during the On Complete stage the Kick will both otput statistics data into the console and send a notification email with the results of the batch excecution. 
+Finally during the On Complete stage the Template will both otput statistics data into the console and send a notification email with the results of the batch excecution. 
 
 # Run it! <a name="runit"/>
 
 Simple steps to get SFDC to SFDC Accounts Migration running.
 
-In any of the ways you would like to run this Kick this is an example of the output you'll see after hitting the HTTP endpoint:
+In any of the ways you would like to run this Template this is an example of the output you'll see after hitting the HTTP endpoint:
 
 <pre>
 <h1>Batch Process initiated</h1>
@@ -48,8 +48,8 @@ While [creating your application on CloudHub](http://www.mulesoft.org/documentat
 
 Once your app is all set and started, supposing you choose as domain name `sfdcaccountmigration` to trigger the use case you just need to hit `http://sfdcaccountmigration.cloudhub.io/migrateaccounts` and report will be sent to the emails configured.
 
-### Deploying your Kick on CloudHub <a name="deployingyourkickoncloudhub"/>
-Mule Studio provides you with really easy way to deploy your Kick directly to CloudHub, for the specific steps to do so please check this [link](http://www.mulesoft.org/documentation/display/current/Deploying+Mule+Applications#DeployingMuleApplications-DeploytoCloudHub)
+### Deploying your Anypoint Template on CloudHub <a name="deployingyouranypointtemplateoncloudhub"/>
+Mule Studio provides you with really easy way to deploy your Template directly to CloudHub, for the specific steps to do so please check this [link](http://www.mulesoft.org/documentation/display/current/Deploying+Mule+Applications#DeployingMuleApplications-DeploytoCloudHub)
 
 
 ## Running on premise <a name="runonopremise"/>
@@ -61,7 +61,7 @@ After this, to trigger the use case you just need to hit the local http endpoint
 
 ## Properties to be configured (With examples)<a name="propertiestobeconfigured"/>
 
-In order to use this Mule Kick you need to configure properties (Credentials, configurations, etc.) either in properties file or in CloudHub as Environment Variables. Detail list with examples:
+In order to use this Template you need to configure properties (Credentials, configurations, etc.) either in properties file or in CloudHub as Environment Variables. Detail list with examples:
 
 ### Application configuration
 + http.port `9090` 
@@ -86,7 +86,7 @@ In order to use this Mule Kick you need to configure properties (Credentials, co
 
 # Customize It!<a name="customizeit"/>
 
-This brief guide intends to give a high level idea of how this Kick is built and how you can change it according to your needs.
+This brief guide intends to give a high level idea of how this Template is built and how you can change it according to your needs.
 As mule applications are based on XML files, this page will be organised by describing all the XML that conform the Kick.
 Of course more files will be found such as Test Classes and [Mule Application Files](http://www.mulesoft.org/documentation/display/current/Application+Format), but to keep it simple we will focus on the XMLs.
 
@@ -105,7 +105,7 @@ In the visual editor they can be found on the *Global Element* tab.
 
 ## endpoints.xml<a name="endpointsxml"/>
 This is the file where you will found the inbound and outbound sides of your integration app.
-This Kick has only an [HTTP Inbound Endpoint](http://www.mulesoft.org/documentation/display/current/HTTP+Endpoint+Reference) as the way to trigger the use case.
+This Template has only an [HTTP Inbound Endpoint](http://www.mulesoft.org/documentation/display/current/HTTP+Endpoint+Reference) as the way to trigger the use case.
 
 ###  Inbound Flow
 **HTTP Inbound Endpoint** - Start Report Generation
@@ -116,17 +116,17 @@ This Kick has only an [HTTP Inbound Endpoint](http://www.mulesoft.org/documentat
 
 
 ## businessLogic.xml<a name="businesslogicxml"/>
-Functional aspect of the kick is implemented on this XML, directed by one flow responsible of excecuting the logic.
-For the pourpose of this particular Kick the *mainFlow* just excecutes a [Batch Job](http://www.mulesoft.org/documentation/display/current/Batch+Processing). which handles all the logic of it.
+Functional aspect of the Template is implemented on this XML, directed by one flow responsible of excecuting the logic.
+For the pourpose of this particular Template the *mainFlow* just excecutes a [Batch Job](http://www.mulesoft.org/documentation/display/current/Batch+Processing). which handles all the logic of it.
 This flow has Exception Strategy that basically consists on invoking the *defaultChoiseExceptionStrategy* defined in *errorHandling.xml* file.
 
 
 ## errorHandling.xml<a name="errorhandlingxml"/>
 Contains a [Catch Exception Strategy](http://www.mulesoft.org/documentation/display/current/Catch+Exception+Strategy) that is only Logging the exception thrown (If so). As you imagine, this is the right place to handle how your integration will react depending on the different exceptions. 
 
-# Testing the Kick <a name="testingthekick"/>
+# Testing the Template <a name="testingthetemplate"/>
 
-You will notice that the Kick has been shipped with test.
+You will notice that the Template has been shipped with test.
 These devidi them self into two categories:
 
 + Unit Tests
