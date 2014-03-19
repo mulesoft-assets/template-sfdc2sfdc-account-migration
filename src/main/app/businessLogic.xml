@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
+<mule xmlns:core="http://www.mulesoft.org/schema/mule/core" 
+xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
 xmlns="http://www.mulesoft.org/schema/mule/core" 
 xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
 xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
@@ -32,7 +34,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
             </batch:step>
             <batch:step name="selectNewerAccountStep" filter-expression="#[recordVars['accountInB'] is NullPayload]">
                 <choice doc:name="Choice">
-                    <when expression="#[org.mule.kicks.util.AccountDateComparator.isAfter(payload, recordVars['accountInB'])]">
+                    <when expression="#[org.mule.templates.util.AccountDateComparator.isAfter(payload, recordVars['accountInB'])]">
                         <expression-component doc:name="define Id in SalesForce Intance B"><![CDATA[payload['Id'] = recordVars['accountInB']['Id']]]></expression-component>
                     </when>
                     <otherwise>
@@ -69,9 +71,9 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         </batch:on-complete>
     </batch:job>
    
-    <flow name="mainFlow" doc:name="mainFlow" processingStrategy="synchronous" doc:description="This flow is the entry point to the Kick business logic.
+    <flow name="mainFlow" doc:name="mainFlow" processingStrategy="synchronous" doc:description="This flow is the entry point to the Template business logic.
 
-This flow should control the direction of the application, and it should be called by the different endpoints that your Kick exposes to trigger it.
+This flow should control the direction of the application, and it should be called by the different endpoints that your Template exposes to trigger it.
 
 ">
         <batch:execute name="migrateAccountsBatch" doc:name="trigger migrateAccountsBatch"/>

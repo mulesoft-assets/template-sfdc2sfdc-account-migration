@@ -87,7 +87,7 @@ In order to use this Template you need to configure properties (Credentials, con
 # Customize It!<a name="customizeit"/>
 
 This brief guide intends to give a high level idea of how this Template is built and how you can change it according to your needs.
-As mule applications are based on XML files, this page will be organised by describing all the XML that conform the Kick.
+As mule applications are based on XML files, this page will be organised by describing all the XML that conform the Template.
 Of course more files will be found such as Test Classes and [Mule Application Files](http://www.mulesoft.org/documentation/display/current/Application+Format), but to keep it simple we will focus on the XMLs.
 
 Here is a list of the main XML files you'll find in this application:

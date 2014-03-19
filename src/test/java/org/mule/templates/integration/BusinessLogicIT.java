@@ -1,7 +1,7 @@
-package org.mule.kicks.integration;
+package org.mule.templates.integration;
 
 import static org.junit.Assert.assertEquals;
-import static org.mule.kicks.builders.SfdcObjectBuilder.anAccount;
+import static org.mule.templates.builders.SfdcObjectBuilder.anAccount;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,25 +16,25 @@ import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.construct.Flow;
-import org.mule.kicks.utils.BatchTestHelper;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.templates.utils.BatchTestHelper;
 import org.mule.transport.NullPayload;
 
 import com.sforce.soap.partner.SaveResult;
 
 /**
- * The objective of this class is to validate the correct behavior of the Mule Kick that make calls to external systems.
+ * The objective of this class is to validate the correct behavior of the Mule Template that make calls to external systems.
  * 
  * The test will invoke the batch process and afterwards check that the accounts had been correctly created and that the ones that should be filtered are not in
  * the destination sand box.
  * 
  */
-public class BusinessLogicIT extends AbstractKickTestCase {
+public class BusinessLogicIT extends AbstractTemplateTestCase {
 
 	protected static final int TIMEOUT_SECONDS = 60;
 
-	private static final String KICK_NAME = "accountmigration";
+	private static final String TEMPLATE_NAME = "account-migration";
 
 	private BatchTestHelper helper;
 
@@ -98,7 +98,7 @@ public class BusinessLogicIT extends AbstractKickTestCase {
 		flow.initialise();
 
 		// This account should not be sync as the industry is not Government nor Education
-		createdAccounts.add(anAccount().with("Name", buildUniqueName(KICK_NAME, "NotSyncOne"))
+		createdAccounts.add(anAccount().with("Name", buildUniqueName(TEMPLATE_NAME, "NotSyncOne"))
 										.with("BillingCity", "San Francisco")
 										.with("BillingCountry", "USA")
 										.with("Phone", "123456789")
@@ -107,7 +107,7 @@ public class BusinessLogicIT extends AbstractKickTestCase {
 										.build());
 
 		// This account should not be sync as the number of employees is smaller than 7000
-		createdAccounts.add(anAccount().with("Name", buildUniqueName(KICK_NAME, "NotSyncTwo"))
+		createdAccounts.add(anAccount().with("Name", buildUniqueName(TEMPLATE_NAME, "NotSyncTwo"))
 										.with("BillingCity", "San Francisco")
 										.with("BillingCountry", "USA")
 										.with("Phone", "123456789")
@@ -116,7 +116,7 @@ public class BusinessLogicIT extends AbstractKickTestCase {
 										.build());
 
 		// This account should BE sync
-		createdAccounts.add(anAccount().with("Name", buildUniqueName(KICK_NAME, "YesSync"))
+		createdAccounts.add(anAccount().with("Name", buildUniqueName(TEMPLATE_NAME, "YesSync"))
 										.with("BillingCity", "San Francisco")
 										.with("BillingCountry", "USA")
 										.with("Phone", "123456789")

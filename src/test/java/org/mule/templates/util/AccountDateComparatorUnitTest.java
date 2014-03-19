@@ -1,4 +1,4 @@
-package org.mule.kicks.util;
+package org.mule.templates.util;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
-import org.mule.kicks.util.AccountDateComparator;
+import org.mule.templates.util.AccountDateComparator;
 
 public class AccountDateComparatorUnitTest {
 
