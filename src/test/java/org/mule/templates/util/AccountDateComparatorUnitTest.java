@@ -16,38 +16,44 @@ import org.mule.templates.util.AccountDateComparator;
 
 public class AccountDateComparatorUnitTest {
 
-	private static final String QUERY_COMPANY_A = "usersFromOrgA";
-	private static final String QUERY_COMPANY_B = "usersFromOrgB";
-
 	@Mock
 	private MuleContext muleContext;
 
 	@Test
 	public void testSyncAccountFromA() throws TransformerException {
-		
+
 		AccountDateComparator comparator = new AccountDateComparator();
-		Assert.assertTrue("Account in A has newer LastReferenceDate and should be migrated", comparator.isAfter(getAccountInA(), getAccountInB()));
-		
+		Assert.assertTrue(
+				"Account in A has newer LastReferenceDate and should be migrated",
+				comparator.isAfter(getAccountInA(), getAccountInB()));
+
 	}
-	
+
 	@Test
-	public void testSyncAccountFromASinceAccountBWasNeverReferenced() throws TransformerException {
-		
+	public void testSyncAccountFromASinceAccountBWasNeverReferenced()
+			throws TransformerException {
+
 		AccountDateComparator comparator = new AccountDateComparator();
-		Assert.assertTrue("Account in B has never been referenced, therefore LastReferenceDate is null and AccountA should be migrated", comparator.isAfter(getAccountInA(), getAccountInBNeverReferenced()));
-		
+		Assert.assertTrue(
+				"Account in B has never been referenced, therefore LastReferenceDate is null and AccountA should be migrated",
+				comparator.isAfter(getAccountInA(),
+						getAccountInBNeverReferenced()));
+
 	}
-	
+
 	@Test
 	public void testSyncAccountFromB() throws TransformerException {
-		
+
 		AccountDateComparator comparator = new AccountDateComparator();
-		Assert.assertFalse("Account in A has newer LastReferenceDate and should be migrated", comparator.isAfter(getAccountInA(), getAccountInBWithNewerDate()));
-		
+		Assert.assertFalse(
+				"Account in A has newer LastReferenceDate and should be migrated",
+				comparator.isAfter(getAccountInA(),
+						getAccountInBWithNewerDate()));
+
 	}
 
 	private Map<String, String> getAccountInA() {
-	
+
 		Map<String, String> accountInA = new HashMap<String, String>();
 		accountInA.put("Id", "1");
 		accountInA.put("LastModifiedDate", "2014-01-22T14:00:00.000Z");
@@ -56,9 +62,9 @@ public class AccountDateComparatorUnitTest {
 		return accountInA;
 
 	}
-	
+
 	private Map<String, String> getAccountInB() {
-		
+
 		Map<String, String> accountInA = new HashMap<String, String>();
 		accountInA.put("Id", "2");
 		accountInA.put("LastModifiedDate", "2014-01-22T11:00:00.000Z");
@@ -69,7 +75,7 @@ public class AccountDateComparatorUnitTest {
 	}
 
 	private Map<String, String> getAccountInBNeverReferenced() {
-		
+
 		Map<String, String> accountInA = new HashMap<String, String>();
 		accountInA.put("Id", "2");
 		accountInA.put("LastModifiedDate", null);
@@ -80,7 +86,7 @@ public class AccountDateComparatorUnitTest {
 	}
 
 	private Map<String, String> getAccountInBWithNewerDate() {
-		
+
 		Map<String, String> accountInA = new HashMap<String, String>();
 		accountInA.put("Id", "2");
 		accountInA.put("LastModifiedDate", "2014-01-22T21:00:00.000Z");
@@ -89,5 +95,5 @@ public class AccountDateComparatorUnitTest {
 		return accountInA;
 
 	}
-	
+
 }
