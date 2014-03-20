@@ -79,11 +79,6 @@ public class AbstractTemplateTestCase extends FunctionalTestCase {
 									.lookupObject(flowName);
 	}
 
-	protected SubflowInterceptingChainLifecycleWrapper getSubFlow(String flowName) {
-		return (SubflowInterceptingChainLifecycleWrapper) muleContext.getRegistry()
-																		.lookupObject(flowName);
-	}
-
 	protected String buildUniqueName(String templateName, String name) {
 		String timeStamp = new Long(new Date().getTime()).toString();
 
