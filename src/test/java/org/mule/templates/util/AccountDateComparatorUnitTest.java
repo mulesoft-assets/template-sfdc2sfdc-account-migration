@@ -23,21 +23,16 @@ public class AccountDateComparatorUnitTest {
 	public void testSyncAccountFromA() throws TransformerException {
 
 		AccountDateComparator comparator = new AccountDateComparator();
-		Assert.assertTrue(
-				"Account in A has newer LastReferenceDate and should be migrated",
-				comparator.isAfter(getAccountInA(), getAccountInB()));
+		Assert.assertTrue("Account in A has newer LastReferenceDate and should be migrated", comparator.isAfter(getAccountInA(), getAccountInB()));
 
 	}
 
 	@Test
-	public void testSyncAccountFromASinceAccountBWasNeverReferenced()
-			throws TransformerException {
+	public void testSyncAccountFromASinceAccountBWasNeverReferenced() throws TransformerException {
 
 		AccountDateComparator comparator = new AccountDateComparator();
-		Assert.assertTrue(
-				"Account in B has never been referenced, therefore LastReferenceDate is null and AccountA should be migrated",
-				comparator.isAfter(getAccountInA(),
-						getAccountInBNeverReferenced()));
+		Assert.assertTrue("Account in B has never been referenced, therefore LastReferenceDate is null and AccountA should be migrated",
+				comparator.isAfter(getAccountInA(), getAccountInBNeverReferenced()));
 
 	}
 
@@ -45,10 +40,7 @@ public class AccountDateComparatorUnitTest {
 	public void testSyncAccountFromB() throws TransformerException {
 
 		AccountDateComparator comparator = new AccountDateComparator();
-		Assert.assertFalse(
-				"Account in A has newer LastReferenceDate and should be migrated",
-				comparator.isAfter(getAccountInA(),
-						getAccountInBWithNewerDate()));
+		Assert.assertFalse("Account in A has newer LastReferenceDate and should be migrated", comparator.isAfter(getAccountInA(), getAccountInBWithNewerDate()));
 
 	}
 

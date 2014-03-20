@@ -49,9 +49,11 @@ public class AbstractTemplateTestCase extends FunctionalTestCase {
 		File[] listOfFiles = testFlowsFolder.listFiles();
 		if (listOfFiles != null) {
 			for (File f : listOfFiles) {
-				if (f.isFile() && f.getName().endsWith("xml")) {
-					resources.append(",").append(TEST_FLOWS_FOLDER_PATH)
-							.append(f.getName());
+				if (f.isFile() && f.getName()
+									.endsWith("xml")) {
+					resources.append(",")
+								.append(TEST_FLOWS_FOLDER_PATH)
+								.append(f.getName());
 				}
 			}
 			return resources.toString();
@@ -67,20 +69,19 @@ public class AbstractTemplateTestCase extends FunctionalTestCase {
 		String pathToResource = MAPPINGS_FOLDER_PATH;
 		File graphFile = new File(pathToResource);
 
-		properties.put(MuleProperties.APP_HOME_DIRECTORY_PROPERTY,
-				graphFile.getAbsolutePath());
+		properties.put(MuleProperties.APP_HOME_DIRECTORY_PROPERTY, graphFile.getAbsolutePath());
 
 		return properties;
 	}
 
 	protected Flow getFlow(String flowName) {
-		return (Flow) muleContext.getRegistry().lookupObject(flowName);
+		return (Flow) muleContext.getRegistry()
+									.lookupObject(flowName);
 	}
 
-	protected SubflowInterceptingChainLifecycleWrapper getSubFlow(
-			String flowName) {
-		return (SubflowInterceptingChainLifecycleWrapper) muleContext
-				.getRegistry().lookupObject(flowName);
+	protected SubflowInterceptingChainLifecycleWrapper getSubFlow(String flowName) {
+		return (SubflowInterceptingChainLifecycleWrapper) muleContext.getRegistry()
+																		.lookupObject(flowName);
 	}
 
 	protected String buildUniqueName(String templateName, String name) {

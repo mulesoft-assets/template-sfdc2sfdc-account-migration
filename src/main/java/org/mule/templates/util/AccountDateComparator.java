@@ -8,12 +8,9 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 /**
- * The function of this class is to establish a relation happens before between
- * two maps representing SFDC accounts.
+ * The function of this class is to establish a relation happens before between two maps representing SFDC accounts.
  * 
- * It's assumed that these maps are well formed maps from SFDC thus they both
- * contain an entry with the expected key. Never the less validations are being
- * done.
+ * It's assumed that these maps are well formed maps from SFDC thus they both contain an entry with the expected key. Never the less validations are being done.
  * 
  * @author cesargarcia
  */
@@ -27,8 +24,7 @@ public class AccountDateComparator {
 	 *            SFDC account map
 	 * @param accountB
 	 *            SFDC account map
-	 * @return true if the last activity date from accountA is after the one
-	 *         from accountB
+	 * @return true if the last activity date from accountA is after the one from accountB
 	 */
 	public static boolean isAfter(Map<String, String> accountA, Map<String, String> accountB) {
 		Validate.notNull(accountA, "The account A should not be null");
@@ -36,19 +32,19 @@ public class AccountDateComparator {
 
 		Validate.isTrue(accountA.containsKey(LAST_MODIFIED_DATE), "The account A map should containt the key " + LAST_MODIFIED_DATE);
 
-		if (accountB.get(LAST_MODIFIED_DATE) == null ) {
-			
+		if (accountB.get(LAST_MODIFIED_DATE) == null) {
+
 			return true;
-			
-		} else { 
-			
+
+		} else {
+
 			DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 			DateTime LastModifiedDateOfA = formatter.parseDateTime(accountA.get(LAST_MODIFIED_DATE));
 			DateTime LastModifiedDateOfB = formatter.parseDateTime(accountB.get(LAST_MODIFIED_DATE));
-			
+
 			return LastModifiedDateOfA.isAfter(LastModifiedDateOfB);
-			
+
 		}
-		
+
 	}
 }
