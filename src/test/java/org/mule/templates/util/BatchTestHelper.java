@@ -1,4 +1,4 @@
-package org.mule.templates.utils;
+package org.mule.templates.util;
 
 import static junit.framework.Assert.assertTrue;
 
