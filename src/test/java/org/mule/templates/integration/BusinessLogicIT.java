@@ -18,9 +18,9 @@ import org.mule.api.MuleException;
 import org.mule.construct.Flow;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.templates.util.BatchTestHelper;
 import org.mule.transport.NullPayload;
 
+import com.mulesoft.module.batch.BatchTestHelper;
 import com.sforce.soap.partner.SaveResult;
 
 /**
