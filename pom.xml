@@ -510,6 +510,7 @@
 			<scope>test</scope>
 			<type>test-jar</type>
 		</dependency>
+<!--
 		<dependency>
 			<groupId>org.mule.tests</groupId>
 			<artifactId>mule-tests-functional</artifactId>
@@ -517,6 +518,7 @@
 			<scope>test</scope>
 			<type>test-jar</type>
 		</dependency>
+-->
 	</dependencies>
 
 	<repositories>
