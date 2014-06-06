@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mule.templates.builders.SfdcObjectBuilder.anAccount;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,13 +35,16 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 
 	protected static final int TIMEOUT_SECONDS = 60;
 
-	private static final String TEMPLATE_NAME = "account-migration";
+	private static final String TEMPLATE_NAME = "sfdc2sfdc-account-migration";
 
 	private BatchTestHelper helper;
 
 	private static SubflowInterceptingChainLifecycleWrapper checkAccountflow;
 	private static List<Map<String, Object>> createdAccounts = new ArrayList<Map<String, Object>>();
 
+	@Rule
+	public DynamicPort port = new DynamicPort("http.port");
+	
 	@Before
 	public void setUp() throws Exception {
 		helper = new BatchTestHelper(muleContext);
@@ -58,8 +62,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 
 	@Test
 	public void testMainFlow() throws Exception {
-		Flow flow = getFlow("mainFlow");
-		flow.process(getTestEvent("", MessageExchangePattern.REQUEST_RESPONSE));
+		runFlow("mainFlow");
 
 		helper.awaitJobTermination(TIMEOUT_SECONDS * 1000, 500);
 		helper.assertJobWasSuccessful();
@@ -157,5 +160,16 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 			}
 		}
 		flow.process(getTestEvent(idList, MessageExchangePattern.REQUEST_RESPONSE));
+	}
+	
+	protected String buildUniqueName(String templateName, String name) {
+		String timeStamp = new Long(new Date().getTime()).toString();
+
+		StringBuilder builder = new StringBuilder();
+		builder.append(name);
+		builder.append(templateName);
+		builder.append(timeStamp);
+
+		return builder.toString();
 	}
 }
