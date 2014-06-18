@@ -100,9 +100,6 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		// This account should not be sync as the industry is not Government nor
 		// Education
 		createdAccounts.add(anAccount().with("Name", buildUniqueName(TEMPLATE_NAME, "NotSyncOne"))
-										.with("BillingCity", "San Francisco")
-										.with("BillingCountry", "USA")
-										.with("Phone", "123456789")
 										.with("Industry", "Insurance")
 										.with("NumberOfEmployees", 8000)
 										.build());
@@ -110,18 +107,12 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		// This account should not be sync as the number of employees is smaller
 		// than 7000
 		createdAccounts.add(anAccount().with("Name", buildUniqueName(TEMPLATE_NAME, "NotSyncTwo"))
-										.with("BillingCity", "San Francisco")
-										.with("BillingCountry", "USA")
-										.with("Phone", "123456789")
 										.with("Industry", "Education")
 										.with("NumberOfEmployees", 5000)
 										.build());
 
 		// This account should BE sync
 		createdAccounts.add(anAccount().with("Name", buildUniqueName(TEMPLATE_NAME, "YesSync"))
-										.with("BillingCity", "San Francisco")
-										.with("BillingCountry", "USA")
-										.with("Phone", "123456789")
 										.with("Industry", "Education")
 										.with("NumberOfEmployees", 9000)
 										.build());
