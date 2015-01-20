@@ -6,7 +6,7 @@ xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" 
 xmlns:spring="http://www.springframework.org/schema/beans" 
 xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
-version="EE-3.5.0" 
+version="EE-3.6.0" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
@@ -27,5 +27,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     <sfdc:config name="SalesforceB" username="${sfdc.b.username}" password="${sfdc.b.password}" securityToken="${sfdc.b.securityToken}" url="${sfdc.b.url}" doc:name="Salesforce B" doc:description="Your other SalesForce instance. This is the target organization, where accounts will be migrated to.">
         <sfdc:connection-pooling-profile initialisationPolicy="INITIALISE_ONE" exhaustedAction="WHEN_EXHAUSTED_GROW"/>
     </sfdc:config>
+
     
 </mule>
