@@ -10,7 +10,7 @@ xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
 xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp"
 xmlns:json="http://www.mulesoft.org/schema/mule/json"
 xmlns:spring="http://www.springframework.org/schema/beans" 
-version="EE-3.5.1" 
+version="EE-3.5.2" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -56,8 +56,8 @@ payload.remove('LastModifiedDate');]]></expression-component>
             		<logger message="Migration process has finished: #[payload]" level="INFO" doc:name="log 'Migration process has finished'"/>
                 </processor-chain>
 				<processor-chain>
-                	<json:object-to-json-transformer doc:name="transform BatchJobInstance to JSON"/>
-					<smtp:outbound-endpoint host="${smtp.host}" port="${smtp.port}" user="${smtp.user}" password="${smtp.password}" to="${mail.to}" from="${mail.from}" subject="${mail.subject}" responseTimeout="10000" connector-ref="gmailConnector" doc:name="send mail"/>
+                    <parse-template location="./src/main/resources/email/body.html" doc:name="Parse Template"/>
+                    <smtp:outbound-endpoint host="${smtp.host}" port="${smtp.port}" user="${smtp.user}" password="${smtp.password}" connector-ref="gmailConnector" to="${mail.to}" from="${mail.from}" subject="${mail.subject}" responseTimeout="10000" doc:name="send mail"/>
 				</processor-chain>
             </scatter-gather>
         </batch:on-complete>
