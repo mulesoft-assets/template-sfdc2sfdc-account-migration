@@ -30,6 +30,18 @@
 				<td><b>Failed Records:</b></td><td>#[message.payload.getFailedRecords()]</td>
 			</tr>			
 			<tr>
+				<td><b>Loaded Records:</b></td><td>#[message.payload.getLoadedRecords()]</td>
+			</tr>
+			<tr>
+				<td><b>Processed Records:</b></td><td>#[message.payload.getProcessedRecords()]</td>
+			</tr>
+			<tr>
+				<td><b>Failed on Input Phase:</b></td><td>#[message.payload.isFailedOnInputPhase() ? "Yes" : "No"]</td>
+			</tr>
+			<tr>
+				<td><b>Failed on Loading Phase:</b></td><td>#[message.payload.isFailedOnLoadingPhase() ? "Yes" : "No"]</td>
+			</tr>
+			<tr>
 				<td><b>Execution started on:</b></td><td>#[new java.util.Date()]</td>
 			</tr>
 		</tbody>
