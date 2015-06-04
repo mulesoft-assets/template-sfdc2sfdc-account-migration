@@ -6,7 +6,7 @@ xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" 
 xmlns:spring="http://www.springframework.org/schema/beans" 
 xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
-version="EE-3.6.0" 
+version="EE-3.7.0" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
