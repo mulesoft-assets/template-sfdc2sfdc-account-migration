@@ -33,7 +33,10 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
                 </enricher>
             </batch:step>
             <batch:step name="createAccountsInBStep" accept-expression="!(payload is NullPayload)">
-                <expression-component doc:name="prepare properties for upsert"><![CDATA[payload['Id'] = recordVars['accountInB'] is NullPayload ? null : recordVars['accountInB']['Id'];
+                <expression-component doc:name="prepare properties for upsert"><![CDATA[payload['Id'] = recordVars['accountInB'] == null ? null : recordVars['accountInB']['Id'];
+//if(recordVars['accountInB'] !=null) {
+//	payload['Id'] = recordVars['accountInB']['Id'];
+//}
 payload.remove('LastModifiedDate');]]></expression-component>
                 <expression-component doc:name="changing type of field NumberOfEmployees to int"><![CDATA[if (payload.get('NumberOfEmployees') == null) {
 	payload.remove('NumberOfEmployees') 
