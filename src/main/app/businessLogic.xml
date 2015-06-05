@@ -32,7 +32,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
                     <sfdc:query-single config-ref="SalesforceB" query="SELECT Id, Name, LastModifiedDate FROM Account WHERE Name = '#[payload['Name']]'" doc:name="query Account in Salesforce instance B"/>
                 </enricher>
             </batch:step>
-            <batch:step name="createAccountsInBStep" accept-expression="!(payload is NullPayload)">
+            <batch:step name="createAccountsInBStep" accept-expression="payload != null">
                 <expression-component doc:name="prepare properties for upsert"><![CDATA[payload['Id'] = recordVars['accountInB'] == null ? null : recordVars['accountInB']['Id'];
 //if(recordVars['accountInB'] !=null) {
 //	payload['Id'] = recordVars['accountInB']['Id'];
