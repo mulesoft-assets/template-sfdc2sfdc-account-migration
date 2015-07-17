@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:core="http://www.mulesoft.org/schema/mule/core" 
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:core="http://www.mulesoft.org/schema/mule/core" 
 xmlns:http="http://www.mulesoft.org/schema/mule/http" 
 xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
 xmlns="http://www.mulesoft.org/schema/mule/core" 
@@ -19,32 +19,37 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
 
  <batch:job name="migrateAccountsBatch">
         <batch:threading-profile poolExhaustedAction="WAIT"/>
         <batch:input>
-            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT AccountNumber, Description, Industry, LastModifiedDate, Name, NumberOfEmployees FROM Account WHERE NumberOfEmployees &gt; 5000 AND (Industry = 'Education' OR Industry = 'Government')" doc:name="query Accounts from Salesforce instance A" fetchSize="${page.size}"/>
+            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT AccountNumber, Description, Industry, Name, NumberOfEmployees FROM Account WHERE NumberOfEmployees &gt; 5000 AND (Industry = 'Education' OR Industry = 'Government')" doc:name="query Accounts from Salesforce instance A" fetchSize="${page.size}"/>
         </batch:input> 
         <batch:process-records>
             <batch:step name="getAccountInBStep">
-                <enricher source="#[payload]" target="#[recordVars['accountInB']]" doc:name="store result in record var 'accountInB'">
-                    <sfdc:query-single config-ref="SalesforceB" query="SELECT Id, Name, LastModifiedDate FROM Account WHERE Name = '#[payload['Name']]'" doc:name="query Account in Salesforce instance B"/>
+                <enricher source="#[payload == null ? null : payload.Id]" target="#[payload.IdInB]" doc:name="store result in 'store result in 'payload.IdInB'">
+                    <sfdc:query-single config-ref="SalesforceB" query="SELECT Id FROM Account WHERE Name = '#[payload['Name']]'" doc:name="query Account in Salesforce instance B"/>
                 </enricher>
             </batch:step>
             <batch:step name="createAccountsInBStep" accept-expression="payload != null">
-                <expression-component doc:name="prepare properties for upsert"><![CDATA[payload['Id'] = recordVars['accountInB'] == null ? null : recordVars['accountInB']['Id'];
-//if(recordVars['accountInB'] !=null) {
-//	payload['Id'] = recordVars['accountInB']['Id'];
-//}
-payload.remove('LastModifiedDate');]]></expression-component>
-                <expression-component doc:name="changing type of field NumberOfEmployees to int"><![CDATA[if (payload.get('NumberOfEmployees') == null) {
-	payload.remove('NumberOfEmployees') 
-} else {
-	int intNumberOfEmployees = Integer.parseInt(payload.get('NumberOfEmployees'));
-	payload.put('NumberOfEmployees', intNumberOfEmployees);
-}]]></expression-component>
+
                 <batch:commit size="200" doc:name="Batch Commit">
+                    <dw:transform-message doc:name="Transform Message for upsert">
+                        <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload map
+{
+	(Id: $.IdInB) when $.IdInB != null,
+	AccountNumber: $.AccountNumber,
+	Description: $.Description,
+	Name: $.Name,
+	Industry: $.Industry,
+	(NumberOfEmployees: $.NumberOfEmployees as :number) when $.NumberOfEmployees != null
+}]]></dw:set-payload>
+                    </dw:transform-message>
 					<sfdc:upsert config-ref="SalesforceB"  type="Account" doc:name="upsert accounts in org B" externalIdFieldName="Id">
                         <sfdc:objects ref="#[payload]"/>
 					</sfdc:upsert>
