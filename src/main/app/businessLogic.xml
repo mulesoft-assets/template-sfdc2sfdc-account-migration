@@ -10,7 +10,7 @@ xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
 xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp"
 xmlns:json="http://www.mulesoft.org/schema/mule/json"
 xmlns:spring="http://www.springframework.org/schema/beans" 
-version="EE-3.7.0" 
+version="EE-3.7.1" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -47,7 +47,7 @@ payload map
 	Description: $.Description,
 	Name: $.Name,
 	Industry: $.Industry,
-	(NumberOfEmployees: $.NumberOfEmployees as :number) when $.NumberOfEmployees != null
+	NumberOfEmployees: $.NumberOfEmployees as :number {class: "java.lang.Integer"} default 0
 }]]></dw:set-payload>
                     </dw:transform-message>
 					<sfdc:upsert config-ref="SalesforceB"  type="Account" doc:name="upsert accounts in org B" externalIdFieldName="Id">
