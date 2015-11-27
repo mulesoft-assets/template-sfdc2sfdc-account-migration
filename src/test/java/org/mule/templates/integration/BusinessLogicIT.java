@@ -39,7 +39,7 @@ import com.sforce.soap.partner.SaveResult;
  */
 public class BusinessLogicIT extends AbstractTemplateTestCase {
 
-	protected static final int TIMEOUT_SECONDS = 60;
+	protected static final int TIMEOUT_SECONDS = 180;
 
 	private static final String TEMPLATE_NAME = "sfdc2sfdc-account-migration";
 
