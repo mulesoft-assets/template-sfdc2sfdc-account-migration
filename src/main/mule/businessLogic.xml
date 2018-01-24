@@ -13,37 +13,15 @@ http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/em
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-	<salesforce:sfdc-config name="Salesforce_Sfdc_A_config"
-		doc:name="Salesforce Sfdc config" doc:id="38a0808d-8f32-4c87-a763-4db431b3c4cd">
-		<salesforce:basic-connection username="${sfdc.a.username}"
-			password="${sfdc.a.password}" securityToken="${sfdc.a.securityToken}" />
-	</salesforce:sfdc-config>
-	<salesforce:sfdc-config name="Salesforce_Sfdc_B_config"
-		doc:name="Salesforce Sfdc config" doc:id="3d4eabb0-83f2-4e02-97e1-77c5417347f7">
-		<salesforce:basic-connection username="${sfdc.b.username}"
-			password="${sfdc.b.password}" securityToken="${sfdc.b.securityToken}" />
-	</salesforce:sfdc-config>
-	<configuration-properties file="common.properties"
-		doc:name="Configuration properties" doc:id="523e4eea-d00f-4213-bde7-a2764a635851" />
-	<configuration-properties file="mule.${mule.env}.properties" doc:name="Configuration properties" doc:id="7115a17b-4a67-4607-8a7c-e8f91b0737de" />
-	<tls:context name="TLS_Context" doc:name="TLS Context" doc:id="322debdf-e869-4294-8d83-e47f7376cbe8" >
-		<tls:trust-store insecure="true" />
-	</tls:context>
-	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="7b0a7d4a-d12d-436a-b8ea-f4c9b77f381c" >
-		<email:smtps-connection host="${smtp.host}" port="${smtp.port}" user="${smtp.user}" password="${smtp.password}" tlsContext="TLS_Context" />
-	</email:smtp-config>
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3885a11b-2cbb-43ca-a34d-ca02fca25e54" >
-		<http:listener-connection host="${http.host}" port="${http.port}" />
-	</http:listener-config>
+	
 	<flow name="businesslogicFlow" doc:id="aff4106d-d2f6-4366-940a-a380dcb1cf73" >
-		<http:listener config-ref="HTTP_Listener_config" path="/migrateaccounts" doc:name="Listener" doc:id="23d52a98-cc66-4d13-8c24-43b6aaffd0de" />
-		<salesforce:query config-ref="Salesforce_Sfdc_A_config" doc:name="Query Accounts from Salesforce instance A" doc:id="ebcf71a8-3192-4437-b2cb-b23f008afae5">
-			<salesforce:salesforce-query>SELECT AccountNumber, Description, Industry, Name, NumberOfEmployees FROM Account WHERE NumberOfEmployees > 5000 AND (Industry = 'Education' OR Industry = 'Government')</salesforce:salesforce-query>
+		<salesforce:query config-ref="Salesforce_Sfdc_configA" doc:name="Query Accounts from Salesforce instance A" doc:id="ebcf71a8-3192-4437-b2cb-b23f008afae5">
+			<salesforce:salesforce-query>SELECT AccountNumber, Description, Industry, Name, NumberOfEmployees FROM Account WHERE NumberOfEmployees &gt; 5000 AND (Industry = 'Education' OR Industry = 'Government')</salesforce:salesforce-query>
 		</salesforce:query>
 		<batch:job jobName="migrateAccountsBatch" doc:id="204892ae-0d97-4326-beae-310c8d52b7a6" >
 			<batch:process-records >
 				<batch:step name="Batch_Step-query-a-destination-instance-B" doc:id="89713774-362a-4e92-9bdc-41e31802bf38" >
-					<salesforce:query-single config-ref="Salesforce_Sfdc_B_config" doc:name="Query Account in Salesforce instance B" doc:id="e828fbe5-8917-4833-a479-8df69b560884" target="IdInB">
+					<salesforce:query-single config-ref="Salesforce_Sfdc_configB" doc:name="Query Account in Salesforce instance B" doc:id="e828fbe5-8917-4833-a479-8df69b560884" target="IdInB">
 						<salesforce:salesforce-query>SELECT Id FROM Account WHERE Name = ':name'</salesforce:salesforce-query>
 						<salesforce:parameters ><![CDATA[#[output applicaton/java
 ---
@@ -62,7 +40,7 @@ payload ++ vars.IdInB]]></ee:set-payload>
 				</batch:step>
 				<batch:step name="Batch_Step-migrate-data-to-destination-instance-B" doc:id="78a74ab4-9b91-416d-985a-acda2ac377eb">
 					<batch:aggregator doc:name="Batch Aggregator" doc:id="1ad86a98-643e-494a-a90a-32daab0b03cc" size="${page.size}">
-						<ee:transform doc:name="Transform Message" doc:id="d484063f-6d81-42ce-98ef-7cec51b04672" >
+						<ee:transform doc:name="Prepare data for  Upsert" doc:id="d484063f-6d81-42ce-98ef-7cec51b04672" >
 							<ee:message >
 								<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
@@ -77,7 +55,7 @@ payload map {
 }]]></ee:set-payload>
 							</ee:message>
 						</ee:transform>
-						<salesforce:upsert-bulk config-ref="Salesforce_Sfdc_B_config" type="Account" externalIdFieldName="Id" doc:name="Upsert bulk - Accounts in Salesforce instance B" doc:id="26dee78b-3cbd-41d7-a260-538058420b0e" />
+						<salesforce:upsert-bulk config-ref="Salesforce_Sfdc_configB" type="Account" externalIdFieldName="Id" doc:name="Upsert bulk - Accounts in Salesforce instance B" doc:id="26dee78b-3cbd-41d7-a260-538058420b0e" />
 					</batch:aggregator>
 				</batch:step>
 			</batch:process-records>
@@ -102,7 +80,7 @@ output text/plain
 ++ "\n Processed Records: " 		++ payload.processedRecords]]></ee:set-payload>
 							</ee:message>
 						</ee:transform>
-						<email:send config-ref="Email_SMTP" doc:name="Send email" doc:id="5896eaa9-dd10-47a2-a6fc-6319b11dbd06" fromAddress="${mail.from}" subject="${mail.subject}" >
+						<email:send config-ref="Email_SMTPS" doc:name="Send email" doc:id="5896eaa9-dd10-47a2-a6fc-6319b11dbd06" fromAddress="${mail.from}" subject="${mail.subject}" >
 							<email:to-addresses >
 								<email:to-address value="${mail.to}" />
 							</email:to-addresses>
@@ -111,6 +89,15 @@ output text/plain
 				</scatter-gather>
 			</batch:on-complete>
 		</batch:job>
-		<set-payload value="Migration process has started!" doc:name="Set Payload" doc:id="ed424ae3-63c0-4e57-89d8-635beaf63362" mimeType="text/html"/>
+		<logger level="INFO" doc:name="Log - Migration process has started!" doc:id="673c18b0-db38-44f6-95ef-69edd1e75ed6" message="Migration process has started!" />
+	</flow>
+	
+	<flow name="mainFlow" doc:id="7c0a5bef-b3d5-442f-bff3-10d038f69a5e" >
+		<flow-ref doc:name="businesslogicFlow" doc:id="91360ede-4d71-44c7-9b64-8ee762e04ea0" name="businesslogicFlow"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="488b507d-e26c-4c56-8759-8bb4f6645d71" type="ANY">
+				<flow-ref doc:name="errorHandlingFlow" doc:id="afdaf73c-0137-4d60-84f6-5c41234771a3" name="errorHandlingFlow" />
+			</on-error-propagate>
+		</error-handler>
 	</flow>
 </mule>
