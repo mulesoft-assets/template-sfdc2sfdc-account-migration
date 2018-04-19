@@ -25,9 +25,9 @@ Note that using this template is subject to the conditions of this [License Agre
 Please review the terms of the license before downloading and using this template. In short, you are allowed to use the template for free with Mule ESB Enterprise Edition, CloudHub, or as a trial in Anypoint Studio.
 
 # Use Case <a name="usecase"/>
-As a Salesforce admin I want to synchronize accounts between two Salesforce orgs.
+As a Salesforce admin I want to migrate accounts from one Salesforce organization to another one.
 
-This Template should serve as a foundation for the process of migrating accounts from one Salesforce instance to another, being able to specify the filtering criteria and desired behavior when an account already exists in the destination org.
+This Template should serve as a foundation for the process of migrating accounts from one Salesforce instance to another, being able to specify the filtering criteria and desired behavior when an account already exists in the destination org. 
 
 As implemented, this Template leverages the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
 The batch job is divided in *Process* and On *Complete* stages.
@@ -112,7 +112,7 @@ First thing to know if you are a newcomer to Mule is where to get the tools.
 
 
 ### Importing an Anypoint Template into Studio
-Mule Studio offers several ways to import a project into the workspace, for instance:
+Mule Studio offers several ways to import a project into the workspace, for instance: 
 
 + Anypoint Studio Project from File System
 + Packaged mule application (.jar)
@@ -125,13 +125,13 @@ Once you have imported you Anypoint Template into Anypoint Studio you need to fo
 
 + Locate the properties file `mule.dev.properties`, in src/main/resources
 + Complete all the properties required as per the examples in the section [Properties to be configured](#propertiestobeconfigured)
-+ Once that is done, right click on you Anypoint Template project folder
++ Once that is done, right click on you Anypoint Template project folder 
 + Hover you mouse over `"Run as"`
 + Click on  `"Mule Application"`
 
 
 ### Running on Mule ESB stand alone <a name="runonmuleesbstandalone"/>
-Complete all properties in one of the property files, for example in [mule.prod.properties](../master/src/main/resources/mule.prod.properties) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`.
+Complete all properties in one of the property files, for example in [mule.prod.properties] (../master/src/main/resources/mule.prod.properties) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`. 
 
 
 ## Running on CloudHub <a name="runoncloudhub"/>
@@ -146,7 +146,7 @@ Mule Studio provides you with really easy way to deploy your Template directly t
 In order to use this Mule Anypoint Template you need to configure properties (Credentials, configurations, etc.) either in properties file or in CloudHub as Environment Variables. Detail list with examples:
 ### Application configuration
 **HTTP Connector configuration**
-+ http.port `9090`
++ http.port `9090` 
 
 **Batch Aggregator configuration**
 + page.size `1000`
@@ -177,9 +177,9 @@ Salesforce imposes limits on the number of API Calls that can be made. Therefore
 
 ***1 + X + X / ${page.size}***
 
-Being ***X*** the number of Accounts to be synchronized on each run.
+Being ***X*** the number of Accounts to be synchronized on each run. 
 
-The division by ***${page.size}*** is because, by default, Accounts are gathered in groups of ${page.size} for each Upsert API Call in the commit step.
+The division by ***${page.size}*** is because, by default, Accounts are gathered in groups of ${page.size} for each Upsert API Call in the commit step.	
 
 For instance if 10 records are fetched from origin instance, then 12 api calls will be made (1 + 10 + 1).
 
@@ -205,7 +205,7 @@ In the visual editor they can be found on the *Global Element* tab.
 
 ## businessLogic.xml<a name="businesslogicxml"/>
 Functional aspect of the Template is implemented on this XML, directed by one flow responsible of excecuting the logic.
-For the pourpose of this particular Template the *mainFlow* just excecutes a [Batch Job](http://www.mulesoft.org/documentation/display/current/Batch+Processing), which handles all the logic of it.
+For the purpose of this particular Template the *mainFlow* uses a [Batch Job](http://www.mulesoft.org/documentation/display/current/Batch+Processing), which handles all the logic of it.
 
 
 
@@ -222,5 +222,8 @@ This Template has only an [HTTP Inbound Endpoint](http://www.mulesoft.org/docume
 
 
 ## errorHandling.xml<a name="errorhandlingxml"/>
-This is the right place to handle how your integration will react depending on the different exceptions.
+This is the right place to handle how your integration will react depending on the different exceptions. 
 This file holds a [Error Handling](http://www.mulesoft.org/documentation/display/current/Error+Handling) that is referenced by the main flow in the business logic.
+
+
+

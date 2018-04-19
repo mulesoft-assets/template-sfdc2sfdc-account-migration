@@ -5,7 +5,7 @@
 	</placeholders>
 	<sections>
 		<section id="use_case">
-As a Salesforce admin I want to synchronize accounts between two Salesforce orgs.
+As a Salesforce admin I want to migrate accounts from one Salesforce organization to another one.
 
 This Template should serve as a foundation for the process of migrating accounts from one Salesforce instance to another, being able to specify the filtering criteria and desired behavior when an account already exists in the destination org. 
 
@@ -90,7 +90,7 @@ This Template has only an [HTTP Inbound Endpoint](http://www.mulesoft.org/docume
 		<section id="default_business_logic_xml">
 		<![CDATA[
 Functional aspect of the Template is implemented on this XML, directed by one flow responsible of excecuting the logic.
-For the pourpose of this particular Template the *mainFlow* just excecutes a [Batch Job](http://www.mulesoft.org/documentation/display/current/Batch+Processing), which handles all the logic of it.
+For the purpose of this particular Template the *mainFlow* uses a [Batch Job](http://www.mulesoft.org/documentation/display/current/Batch+Processing), which handles all the logic of it.
 ]]>
 		</section>
 	</sections>
