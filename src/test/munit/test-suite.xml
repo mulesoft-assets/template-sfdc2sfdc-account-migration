@@ -15,25 +15,38 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<configuration-properties doc:name="Configuration properties" doc:id="59fef852-f885-4b1e-baac-96bce830be9f" file="mule-artifact.properties" />
 	<configuration-properties doc:name="Configuration properties" doc:id="a0f29785-69a4-48b7-8ef5-410c95ee7ff2" file="common.properties" />
 	<munit:before-test name="test-suiteBefore_Test" description="Before tests actions" doc:id="7f8facb1-95ae-4456-9448-faf3a3a89dc9" >
+		<ee:transform doc:name="Prepare common testing data" doc:id="6ec1eb9e-e664-45f1-bafe-5453ed209107" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="testName1" ><![CDATA[%dw 2.0
+output application/java
+---
+"test" ++ (uuid() splitBy("-"))[0] ++ "Name"]]></ee:set-variable>
+				<ee:set-variable variableName="testName2" ><![CDATA[%dw 2.0
+output application/java
+---
+"test" ++ (uuid() splitBy("-"))[0] ++ "Name"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
 		<ee:transform doc:name="Prepare testing data" doc:id="7c253cc1-4a09-4e71-a9c5-74e5dbbf5848">
 				<ee:message>
 					<ee:set-payload><![CDATA[%dw 2.0
 output application/java
----
+--- 
 [{
 	Description: "test description1",
-	Name: "Integration TestName1",
+	Name: vars.testName1,
 	Industry: "Education",
 	NumberOfEmployees: 15001
 },
 {
 	Description: "test description2",
-	Name: "Integration TestName2",
-	Industry: "Energy",
-	NumberOfEmployees: 100
+	Name: vars.testName2,
+	Industry: "Education",
+ 	NumberOfEmployees: 100
 }
-]
-]]></ee:set-payload>
+]]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
 		<salesforce:create type="Account" doc:name="Create Accounts in instance A" doc:id="d62c8e61-71a7-43f3-8aa0-b4b5cb5359a4" config-ref="Salesforce_Sfdc_configA" />
@@ -53,7 +66,7 @@ output application/java
 				<salesforce:parameters ><![CDATA[#[output applicaton/java
 ---
 {
-	"name2" : "Integration TestName2"
+	"name2" : vars.testName2
 }]]]></salesforce:parameters>
 			</salesforce:query>
 			<set-variable value="#[sizeOf(payload)]" doc:name=" Set Variable for assertion" doc:id="95c89be7-1756-40fd-b198-2b1334bf6979" variableName="resultSize"/>
@@ -63,7 +76,7 @@ output application/java
 				<salesforce:parameters ><![CDATA[#[output applicaton/java
 ---
 {
-	"name1" : "Integration TestName1"
+	"name1" : vars.testName1
 }]]]></salesforce:parameters>
 			</salesforce:query>
 			<set-variable value="#[sizeOf(payload)]" doc:name="Set Variable with result size" doc:id="b485fb70-e4a8-4f97-9da9-e0ace1a236c9" variableName="resultSize" />
