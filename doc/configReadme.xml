@@ -5,92 +5,92 @@
 	</placeholders>
 	<sections>
 		<section id="use_case">
-As a Salesforce admin I want to migrate accounts from one Salesforce organization to another one.
+As a Salesforce administrator I want to migrate accounts from one Salesforce organization to another one.
 
-This Template should serve as a foundation for the process of migrating accounts from one Salesforce instance to another, being able to specify the filtering criteria and desired behavior when an account already exists in the destination org. 
+This template serves as a foundation for the process of migrating accounts from one Salesforce instance to another, and specifying the filtering criteria and desired behavior when an account already exists in the destination org. 
 
-As implemented, this Template leverages the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
-The batch job is divided in *Process* and On *Complete* stages.
+As implemented, this template leverages the Mule batch module.
+The batch job is divided into *Process* and *On Complete* stages.
 
-Migration process starts from fetching all the existing Accounts that match the filter criteria from Salesforce Org A.
-On *Process* stage matched accounts will be grouped and inserted or updated in Salesforce Org B.
+The migration process starts by fetching all the existing accounts that match the filter criteria from Salesforce Org A.
+On *Process* stage matches accounts that are grouped and inserted or updated into Salesforce Org B.
 
-Finally during the *On Complete* stage the Template will both output statistics data into the console and send a notification email with the results of the batch execution.		
+Finally during the *On Complete* stage, the template both outputs statistics data to the console and sends a notification email with the results of the batch execution.		
 
-The template is covered by the integration tests using the [MUnit](https://docs.mulesoft.com/munit). To be able to run the tests, see the example configuration of the test property file. 
+The template is covered by the integration tests using the MUnit. To be able to run the tests, see the example configuration of the test property file. 
 </section>
 		<section id="considerations">
 <![CDATA[
-To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both, that must be made in order for all to run smoothly. 
-**Failing to do so could lead to unexpected behavior of the template.**
+To make this template run, there are certain preconditions that must be considered. All of them deal with the preparations in both, that must be made for all to run smoothly. 
+Failing to do so can lead to unexpected behavior of the template.
 ]]>
 		</section>
 		<section id="running_on_cloudhub">
 <![CDATA[
 
-Once your app is all set and started, supposing you choose as domain name `sfdcaccountmigration` to trigger the use case you just need to hit `http://sfdcaccountmigration.cloudhub.io/migrateaccounts` and report will be sent to the emails configured.
+After your app is running, if you chose `sfdcaccountmigration` as the domain name to trigger the use case, you can browse to `http://sfdcaccountmigration.cloudhub.io/migrateaccounts` to run the app, and the report gets sent to the emails you configured.
 ]]>
 		</section>
 		<section id="application_configuration">
 		<![CDATA[
-**HTTP Connector configuration**
+**HTTP Connector Configuration**
 + http.port `9090` 
 
-**Batch Aggregator configuration**
+**Batch Aggregator Configuration**
 + page.size `1000`
 
-**Salesforce Connector configuration for company A**
+**Salesforce Connector Configuration for Company A**
 + sfdc.a.username `bob.dylan@orga`
 + sfdc.a.password `DylanPassword123`
 + sfdc.a.securityToken `avsfwCUl7apQs56Xq2AKi3X`
 
-**Salesforce Connector configuration for company B**
+**Salesforce Connector Configuration for Company B**
 + sfdc.b.username `joan.baez@orgb`
 + sfdc.b.password `JoanBaez456`
 + sfdc.b.securityToken `ces56arl7apQs56XTddf34X`
 
-**SMTP Services configuration**
-+ smtp.host `smtp.gmail.com`
+**SMTP Services Configuration**
++ smtp.host `smtp.example.com`
 + smtp.port `587`
-+ smtp.user `gmailuser`
-+ smtp.password `gmailpassword`
++ smtp.user `exampleuser`
++ smtp.password `examplepassword`
 
-**Email details**
-+ mail.from `your.email@gmail.com`
-+ mail.to `your.email@gmail.com`
+**Email Details**
++ mail.from `your.email@example.com`
++ mail.to `your.email@example.com`
 + mail.subject `Mail subject`
 ]]>
 		</section>
 		<section id="api_calls">
 		<![CDATA[
-Salesforce imposes limits on the number of API Calls that can be made. Therefore calculating this amount may be an important factor to consider. Account Broadcast Template calls to the API can be calculated using the formula:
+Salesforce imposes limits on the number of API Calls that can be made. Therefore calculating this amount is important. This template calls the API using this formula:
 
 ***1 + X + X / ${page.size}***
 
-Being ***X*** the number of Accounts to be synchronized on each run. 
+***X*** is the number of accounts to be synchronized on each run. 
 
-The division by ***${page.size}*** is because, by default, Accounts are gathered in groups of ${page.size} for each Upsert API Call in the commit step.	
+Divide by ***${page.size}*** because by default, accounts are gathered in groups of ${page.size} for each Upsert API Call in the commit step.	
 
-For instance if 10 records are fetched from origin instance, then 12 api calls will be made (1 + 10 + 1).
+For instance if 10 records are fetched from origin instance, then 12 API calls are made (1 + 10 + 1).
 ]]>
 		</section>
 		<section id="default_endpoints_xml">
 		<![CDATA[
-This is the file where you will found the inbound and outbound sides of your integration app.
-This Template has only an [HTTP Inbound Endpoint](http://www.mulesoft.org/documentation/display/current/HTTP+Endpoint+Reference) as the way to trigger the use case.
+This is the file where you specify the inbound and outbound sides of your integration app.
+This template only uses an HTTP Listener to trigger the use case.
 
 ###  Inbound Flow
-**HTTP Inbound Endpoint** - Start Report Generation
-+ `${http.port}` is set as a property to be defined either on a property file or in CloudHub environment variables.
-+ The path configured by default is `migrateaccounts` and you are free to change for the one you prefer.
-+ The host name for all endpoints in your CloudHub configuration should be defined as `localhost`. CloudHub will then route requests from your application domain URL to the endpoint.
-+ The endpoint is configured as a *request-response* since as a result of calling it the response will be the total of Accounts synced and filtered by the criteria specified.
+**HTTP Listener** - Start Report Generation
++ `${http.port}` is set as a property to be defined either in a property file or in the CloudHub environment variables.
++ The path configured by default is `migrateaccounts` and you are free to change it to one you prefer.
++ The host name for all endpoints in your CloudHub configuration should be defined as `localhost`. CloudHub routes requests from your application domain URL to the endpoint.
++ The endpoint is configured as a *request-response* since as a result of calling it the response is the total of accounts synced and filtered by the criteria specified.
 ]]>
 		</section>
 		<section id="default_business_logic_xml">
 		<![CDATA[
-Functional aspect of the Template is implemented on this XML, directed by one flow responsible of excecuting the logic.
-For the purpose of this particular Template the *mainFlow* uses a [Batch Job](http://www.mulesoft.org/documentation/display/current/Batch+Processing), which handles all the logic of it.
+The functional aspect of the template is implemented in this XML file, directed by one flow responsible of excecuting the logic.
+For the purpose of this particular template the *mainFlow* uses a Mule batch job, which handles all the logic.
 ]]>
 		</section>
 	</sections>
