@@ -12,10 +12,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
 	
-	<flow name="businesslogicFlow" doc:id="aff4106d-d2f6-4366-940a-a380dcb1cf73" >
-		<salesforce:query config-ref="Salesforce_Sfdc_configA" doc:name="Query Accounts from Salesforce instance A" doc:id="ebcf71a8-3192-4437-b2cb-b23f008afae5">
-			<salesforce:salesforce-query>SELECT AccountNumber, Description, Industry, Name, NumberOfEmployees FROM Account WHERE NumberOfEmployees &gt; 5000 AND (Industry = 'Education' OR Industry = 'Government')</salesforce:salesforce-query>
-		</salesforce:query>
+	<flow name="businessLogicFlow" doc:id="aff4106d-d2f6-4366-940a-a380dcb1cf73" >
 		<batch:job jobName="migrateAccountsBatch" doc:id="204892ae-0d97-4326-beae-310c8d52b7a6" >
 			<batch:process-records >
 				<batch:step name="Batch_Step-query-a-destination-instance-B" doc:id="89713774-362a-4e92-9bdc-41e31802bf38" >
@@ -90,8 +87,14 @@ output text/plain
 		<logger level="INFO" doc:name="Log - Migration process has started!" doc:id="673c18b0-db38-44f6-95ef-69edd1e75ed6" message="Migration process has started!" />
 	</flow>
 	
+	<flow name="queryFlow" doc:id="b0338e9a-92cc-4b2a-b219-4360c4a7bdb0" >
+		<salesforce:query config-ref="Salesforce_Sfdc_configA" doc:name="Query Accounts from Salesforce instance A" doc:id="ebcf71a8-3192-4437-b2cb-b23f008afae5">
+			<salesforce:salesforce-query>SELECT AccountNumber, Description, Industry, Name, NumberOfEmployees FROM Account WHERE NumberOfEmployees &gt; 5000 AND (Industry = 'Education' OR Industry = 'Government')</salesforce:salesforce-query>
+		</salesforce:query>
+	</flow>
 	<flow name="mainFlow" doc:id="7c0a5bef-b3d5-442f-bff3-10d038f69a5e" >
-		<flow-ref doc:name="businesslogicFlow" doc:id="91360ede-4d71-44c7-9b64-8ee762e04ea0" name="businesslogicFlow"/>
+		<flow-ref doc:name="queryFlow" doc:id="d64e1df5-1fa7-4999-a717-9ff2e7bfba32" name="queryFlow"/>
+		<flow-ref doc:name="businessLogicFlow" doc:id="91360ede-4d71-44c7-9b64-8ee762e04ea0" name="businessLogicFlow"/>
 		<error-handler >
 			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="488b507d-e26c-4c56-8759-8bb4f6645d71" type="ANY">
 				<flow-ref doc:name="errorHandlingFlow" doc:id="afdaf73c-0137-4d60-84f6-5c41234771a3" name="errorHandlingFlow" />
