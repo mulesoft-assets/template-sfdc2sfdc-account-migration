@@ -16,20 +16,20 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		<batch:job jobName="migrateAccountsBatch" doc:id="204892ae-0d97-4326-beae-310c8d52b7a6" >
 			<batch:process-records >
 				<batch:step name="Batch_Step-query-a-destination-instance-B" doc:id="89713774-362a-4e92-9bdc-41e31802bf38" >
-					<salesforce:query-single config-ref="Salesforce_Sfdc_configB" doc:name="Query Account in Salesforce instance B" doc:id="e828fbe5-8917-4833-a479-8df69b560884" target="IdInB">
+                    <salesforce:query config-ref="Salesforce_Sfdc_configB" doc:name="Query Account in Salesforce instance B" doc:id="e828fbe5-8917-4833-a479-8df69b560884" target="IdInB">
 						<salesforce:salesforce-query>SELECT Id FROM Account WHERE Name = ':name'</salesforce:salesforce-query>
 						<salesforce:parameters ><![CDATA[#[output applicaton/java
 ---
 {
 	"name" : payload.Name
 }]]]></salesforce:parameters>
-					</salesforce:query-single>
-					<ee:transform doc:name="Enrich Payload with IdInB" doc:id="c119f87d-9095-4962-b961-efe507b06a0c" >
+					</salesforce:query>
+                    <ee:transform doc:name="Enrich Payload with IdInB" doc:id="c119f87d-9095-4962-b961-efe507b06a0c" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 ---
-payload ++ vars.IdInB]]></ee:set-payload>
+payload ++ if (isEmpty(vars.IdInB)) {"Id": null} else vars.IdInB[0]]]></ee:set-payload>
 						</ee:message>
 					</ee:transform>
 				</batch:step>
@@ -50,7 +50,10 @@ payload map {
 }]]></ee:set-payload>
 							</ee:message>
 						</ee:transform>
-						<salesforce:upsert-bulk config-ref="Salesforce_Sfdc_configB" type="Account" externalIdFieldName="Id" doc:name="Upsert bulk - Accounts in Salesforce instance B" doc:id="26dee78b-3cbd-41d7-a260-538058420b0e" />
+						<salesforce:create-job doc:name="Upsert job - Accounts in Salesforce instance B" doc:id="3f84367e-3a7c-484d-890c-a5d1c7337af7" config-ref="Salesforce_Sfdc_configB" operation="upsert" type="Account" target="jobInfo">
+                            <salesforce:create-job-request ><![CDATA[#[externalIdFieldName: "Id"]]]></salesforce:create-job-request>
+                        </salesforce:create-job>
+                        <salesforce:create-batch doc:name="Upsert batch - Accounts in Salesforce instance B" doc:id="ea0b0a19-6b53-429d-ab6e-e675cecc0637" jobInfoBatch="#[vars.jobInfo]" config-ref="Salesforce_Sfdc_configB"/>
 					</batch:aggregator>
 				</batch:step>
 			</batch:process-records>
